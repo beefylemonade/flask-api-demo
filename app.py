@@ -1,53 +1,42 @@
-from flask import Flask
+import os
+from flask import Flask, request
+
+from db import db
+import models
+
+from flask_smorest import Api
+from resources.item import blp as ItemBlueprint
+from resources.store import blp as StoreBlueprint
 
 
+def create_app(db_url=None):
+    app = Flask(__name__)
 
-app = Flask(__name__)
+    app.config["PROPAGATE_EXCEPTION"] = True
+    app.config["API_TITLE"] = "Stores REST API"
+    app.config["API_VERSION"] = "v1"
+    app.config["OPENAPI_VERSION"] = "3.0.3"
+    app.config["OPENAPI_URL_PREFIX"] = "/"
+    app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
+    app.config["OPENAPI_SWAGGER_UI_URL"] = (
+        "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
+    )
 
-stores = [{"name": "My Store", "items": [{"name": "chair", "price": 15.99}]}]
+    # Starting db stuff
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_url or os.getenv(
+        "DATABASE_URL", "sqlite:///data.db"
+    )
+    # in production, db_url can be passed it, if not, check environmen variable, if not, sqlite
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    db.init_app(app)
 
-@app.get("/store")  # localhost:5000/store
-def get_stores():
-    pass
+    api = Api(app)
 
+    with app.app_context():
+        db.create_all()
 
-@app.get("/item")  # localhost:5000/item
-def get_all_items():
-    pass
+    api.register_blueprint(StoreBlueprint)
+    api.register_blueprint(ItemBlueprint)
 
-
-@app.post("/store")  # localhost:5000/stores
-def create_stores():
-
-    pass
-
-
-@app.post("/item")
-def create_item():
-    pass
-
-
-@app.get("/store/<string:store_id>")
-def get_store(store_id):
-    pass
-
-
-@app.get("/item/<string:item_id>")
-def get_item(item_id):
-    pass
-
-
-@app.delete("/item/<string:item_id>")
-def delete_item(item_id):
-    pass
-
-
-@app.delete("/store/<string:store_id>")
-def delete_store(store_id):
-    pass
-
-
-@app.put("/item/<string:item_id>")
-def update_item(item_id):
-    pass
+    return app
