@@ -11,4 +11,4 @@ class ItemModel(db.Model):
         db.Integer, db.ForeignKey("stores.id"), unique=False, nullable=False
     )
 
-    store = db.relationship("StoreModel", back_populates="items") # Just to easily access to refer to the store asociated to it
+    store = db.relationship("StoreModel", back_populates="items") # Just to easily access, to refer to the store asociated to it

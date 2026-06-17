@@ -7,4 +7,5 @@ class StoreModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
 
-    items = db.relationship("ItemModel", back_populates="store", lazy="dynamic") # dynamic, items here aren't pre-fetched
+    items = db.relationship("ItemModel", back_populates="store", lazy="dynamic", cascade="all, delete") # dynamic, items here aren't pre-fetched
+
