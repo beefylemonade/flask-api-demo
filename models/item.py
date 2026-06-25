@@ -12,3 +12,5 @@ class ItemModel(db.Model):
     )
 
     store = db.relationship("StoreModel", back_populates="items") # Just to easily access, to refer to the store asociated to it
+    tags = db.relationship("TagModel", back_populate="items", secondary="items_tags")
+
