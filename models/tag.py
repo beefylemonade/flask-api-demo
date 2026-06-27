@@ -11,3 +11,9 @@ class TagModel(db.Model):
     store = db.relationship("StoreModel", back_populates="tags")
 
     items = db.relationship("ItemModel", back_populates="tags", secondary="items_tags")
+
+    # this makes sure that the pair name and store_id need to be uniqe
+
+    __table_args__ = (
+        db.UniqueConstraint("name", "store_id", name="_name_store_uc"),
+    )
